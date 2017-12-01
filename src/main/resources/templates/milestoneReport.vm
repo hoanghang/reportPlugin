@@ -1,0 +1,154 @@
+$webResourceManager.requireResourcesForContext("MilestoneReport")
+$webResourceManager.requireResource("jira.webresources:calendar-en")
+$webResourceManager.requireResource("jira.webresources:calendar")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
+$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-iconfont")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+<html>
+<head>
+    <title>Milestone report </title>
+</head>
+<body style="overflow:auto;">
+<form id="ProjectInfo" class="aui" method="POST">
+    <div style="width: 700px; margin-top:20px !important; margin-bottom:auto; margin-left: auto; margin-right: auto; padding-left: 200px;border: thin solid #DDD;border-radius: 8px;background-color: #FFF;">
+        <div class="field-group">
+            <label> </label>
+            <h3><b>Milestone report</b></h3>
+        </div>
+        <div class="field-group">
+            <label for="projectType">Project types</label>
+            <select name="projectType" id="projectType" multiple="">
+                #foreach ($projectType in $action.getAllProjectTypes())
+                    <option value='$projectType.getKey().key'>$projectType.getKey().key</option>
+                #end
+            </select>
+        </div>
+        <div class="field-group">
+            <label for="projectCat">Project categories</label>
+            <select name="projectCat" id="projectCat" multiple="">
+                #foreach ($projectCat in $action.getAllProjectCategories())
+                    <option value='$projectCat.id'>$projectCat.name</option>
+                #end
+            </select>
+        </div>
+        <div class="field-group">
+            <label for="projects">Projects</label>
+            <select name="projects" id="projects" multiple="">
+                #foreach ($project in $action.getAllProject())
+                    <option value='$project.id'>$project.name</option>
+                #end
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="milestoneStatus">Milestone status</label>
+            <select name="milestoneStatus" id="milestoneStatus" multiple="">
+                <option value="Released">Released</option>
+                <option value="UnReleased">UnReleased</option>
+                <option value="Archive">Archive</option>
+            </select>
+        </div>
+
+        <div class="field-group">
+            <label for="select-from-date">Start date</label>
+            <input class="text date-field" type="text" id="txtStartDate" name="txtStartDate" value=""
+                   data-aui-validation-field="" data-aui-validation-milestone-list-start-date="true"
+                   data-aui-validation-required="required" style="width:120px;"/>
+            <a href="#" class="date_picker projectConfig-datepicker" name="StartDate" title="Select a date"
+               id="icon-sdate-picker">
+                <span class="aui-icon icon-date">Select a date</span>
+                <span class="content"></span>
+            </a>
+            <span id="fromdate-validate" style="color:#d04437"></span>
+        </div>
+        <div class="field-group">
+            <label for="select-to-date">Release Date</label>
+            <input class="text date-field" type="text" id="txtEndDate" name="txtEndDate" value=""
+                   data-aui-validation-field="" data-aui-validation-milestone-list-end-date="true"
+                   data-aui-validation-required="required" style="width:120px;"/>
+            <a href="#" class="date_picker projectConfig-datepicker" name="EndDate" title="Select a date"
+               id="icon-edate-picker">
+                <span class="aui-icon icon-date">Select a date</span>
+                <span class="content"></span>
+            </a>
+            <span id="todate-validate" style="color:#d04437"></span>
+        </div>
+        <div class="field-group">
+            <label></label>
+            <input id="btnExport" class="aui-button" type="button" value="Export" style="margin-top: 20px;"/>
+        </div>
+        <div class="field-group">
+                    <label></label>
+                    <input id="btnExport123" class="aui-button" type="button" value="Export123" style="margin-top: 20px;" onclick="MilestoneReport.clickExport()"/>
+                </div>
+    </div>
+</form>
+<script>
+    AJS.$(document).ready(function(){
+        AJS.$("#projects").auiSelect2();
+        AJS.$("#projectType").auiSelect2();
+        AJS.$("#projectCat").auiSelect2();
+        AJS.$("#milestoneStatus").auiSelect2();
+    });
+    var DATE_FORMAT_JAVASCRIPT = '$action.getDateFormat()';
+    AJS.params.dateFormat = DATE_FORMAT_JAVASCRIPT;
+    Calendar.setup({
+        firstDay: 0,
+        inputField: "txtStartDate",
+        button: "icon-sdate-picker",
+        align: "Br",
+        singleClick: true,
+        useISO8601WeekNumbers: false, // use ISO8601 date/time standard
+        showsTime: false,
+        ifFormat: AJS.params.dateFormat,
+    });
+    Calendar.setup({
+        firstDay: 0,
+        inputField: "txtEndDate",
+        button: "icon-edate-picker",
+        align: "Br",
+        singleClick: true,
+        useISO8601WeekNumbers: false,
+        showsTime: false,
+        ifFormat: AJS.params.dateFormat,
+    });
+    AJS.$("#txtStartDate").change(function () {
+        AJS.$("#fromdate-validate").html('');
+    });
+    AJS.$("#txtEndDate").change(function () {
+        AJS.$("#todate-validate").html('');
+    });
+
+    AJS.$("#btnExport").click(function () {
+            var projects = AJS.$("#projects").val();
+            var issueType = AJS.$("#issueType").val();
+            var toDate = AJS.$("#txtEndDate").val();
+            var fromDate = AJS.$("#txtStartDate").val();
+            var projectTmp = "";
+            if (projects) {
+                for (var i = 0; i < projects.length; i++) {
+                    if (i == 0) {
+                        projectTmp += projects[i];
+                    } else {
+                        projectTmp += "," + projects[i];
+                    }
+
+                }
+            }
+            var issueTypeTmp = "";
+                if (issueType) {
+                    for (var i = 0; i < issueType.length; i++) {
+                        if (i == 0) {
+                            issueTypeTmp += issueType[i];
+                        } else {
+                            issueTypeTmp += "," + issueType[i];
+                        }
+
+                    }
+                }
+            location.href = contextPath + "/secure/QABusyRateWeeklyExportAction.jspa?projects=" + projectTmp + "&issueType=" + issueTypeTmp + "&toDate=" + toDate + "&fromDate=" + fromDate;
+        });
+</script>
+</body>
+</html>

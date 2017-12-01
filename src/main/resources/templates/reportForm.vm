@@ -1,0 +1,55 @@
+##$webResourceManager.requireResourcesForContext("reportPlugin")
+$webResourceManager.requireResource("jira.webresources:calendar-en")
+$webResourceManager.requireResource("jira.webresources:calendar")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
+$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-iconfont")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+<html>
+<head>
+    <title>QA Busyrate weekly report </title>
+</head>
+<body>
+    <style>
+        #content {
+            width: 100%;
+            background-color: #F0F0F0;
+        }
+        #maincontent {
+            float: left;
+            width: 80%;
+        }
+        #menuleftcontent {
+            float: left;
+            width: 20%;
+            background-color: #CCCCCC;
+        }
+        #clearingdiv {
+            clear: both;
+        }
+    </style>
+    <div> BÁO CÁO </div>
+    <div id="content">
+         <div id="menuleftcontent">
+             <div id="firstcontent">Báo cáo tập đoàn</div>
+                 <ul id="menu">
+                     <li id="firstReport" onclick="clickFirst()"><a href="#firstcontent">first</a></li>
+                     <li><a href="#secondcontent">second</a></li>
+                     <li><a href="#thirdcontent">third</a></li>
+                 </ul>
+             <div id="secondcontent">Báo cáo soft</div>
+                 <ul id="menu">
+                     <li><a href="#firstcontent">first</a></li>
+                     <li><a href="#secondcontent">second</a></li>
+                     <li><a href="#thirdcontent">third</a></li>
+                 </ul>
+         </div>
+         <div id="maincontent">
+              <div id="firstcontent">firstcontent</div>
+              <div id="secondcontent">secondcontent</div>
+              <div id="thirdcontent">thirdcontent</div>
+          </div>
+         <div id="clearingdiv"></div>
+     </div>
+</body>
+</html>

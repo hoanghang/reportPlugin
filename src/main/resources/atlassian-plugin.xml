@@ -1,0 +1,96 @@
+<atlassian-plugin key="${atlassian.plugin.key}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+        <param name="plugin-icon">images/pluginIcon.png</param>
+        <param name="plugin-logo">images/pluginLogo.png</param>
+    </plugin-info>
+
+    <!-- add our i18n resource -->
+    <resource type="i18n" name="i18n" location="reportPlugin"/>
+
+    <!--<component-import key="QABusyRateWeeklyService" name="QABusyRateWeeklyService"  interface="vn.vnpt.reportPlugin.service.QABusyRateWeeklyService">-->
+        <!--<description>QA Busy Rate Weekly Service</description>-->
+    <!--</component-import>-->
+
+    <!-- add our web resources -->
+    <web-resource key="reportPlugin-resources" name="reportPlugin Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        
+        <resource type="download" name="reportPlugin.css" location="/css/reportPlugin.css"/>
+        <resource type="download" name="reportPlugin.js" location="/js/reportPlugin.js"/>
+        <resource type="download" name="images/" location="/images"/>
+
+        <context>reportPlugin</context>
+    </web-resource>
+    <!-- add our web resources -->
+    <web-resource key="milestone-resources" name="Milestone Report Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        <resource type="download" name="MilestoneReport.js" location="/js/MilestoneReport.js"/>
+        <context>MilestoneReport</context>
+    </web-resource>
+
+    <!-- REST -->
+    <rest name="Report REST Service" i18n-name-key="report-rest-service.name"
+          key="report-rest-service" path="/vnpt-report" version="1.0">
+        <description key="report-rest-service.description">The Report REST Service Plugin</description>
+    </rest>
+    <!-- End rest -->
+
+    <web-section name="reportSection" i18n-name-key="report-qa-section.name"
+                 key="report-qa-section" location="report-qa-link" weight="200">
+        <description key="report-qa.description">The Report Plugin</description>
+    </web-section>
+
+    <web-item key="report-qa-link" name="Report Link"
+              section="system.top.navigation.bar" weight="200">
+        <label>Reports</label>
+        <link linkId="report-qa-link">/secure/QABusyrateReport.jspa</link>
+    </web-item>
+    <web-item key="view-report-qa-link" name="Report Link"
+              section="report-qa-link/report-qa-section" weight="20">
+        <label>Báo cáo sự cố</label>
+        <link linkId="view-report-qa-link">/secure/QABusyrateReport.jspa</link>
+    </web-item>
+    <webwork1 key="QABusyrateReport"  name="ReportAction" class="java.lang.Object">
+        <actions>
+            <action name="vn.vnpt.reportPlugin.action.QABusyrateReport"
+                    alias="QABusyrateReport">
+                <view name="success">/templates/busyrateWeeklyReport.vm</view>
+                <!--<view name="success">/templates/reportForm.vm</view>-->
+                <view name="error">/templates/busyrate/error.vm</view>
+            </action>
+            <action name="vn.vnpt.reportPlugin.action.report.QABusyRateWeeklyExportAction"
+                    alias="QABusyRateWeeklyExportAction">
+                <view name="success">/templates/busyrateWeeklyReport.vm</view>
+                <view name="error">/templates/busyrate/error.vm</view>
+            </action>
+        </actions>
+    </webwork1>
+
+    <!--Milestone report-->
+
+    <web-item key="milestone-report" name="Report Link"
+              section="report-qa-link/report-qa-section" weight="30">
+        <label>Milestone report</label>
+        <link linkId="milestone-report">/secure/MilestoneReport.jspa</link>
+    </web-item>
+    <webwork1 key="MilestoneReport"  name="MilestoneReportAction" class="java.lang.Object">
+        <actions>
+            <action name="vn.vnpt.reportPlugin.action.MilestoneReport"
+                    alias="MilestoneReport">
+                <view name="success">/templates/milestoneReport.vm</view>
+                <!--<view name="success">/templates/reportForm.vm</view>-->
+                <view name="error">/templates/busyrate/error.vm</view>
+            </action>
+            <action name="vn.vnpt.reportPlugin.action.report.MilestoneReportExportAction"
+                    alias="MilestoneReportExportAction">
+                <view name="success">/templates/milestoneReport.vm</view>
+                <view name="error">/templates/busyrate/error.vm</view>
+            </action>
+        </actions>
+    </webwork1>
+
+
+</atlassian-plugin>
