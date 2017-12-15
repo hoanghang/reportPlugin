@@ -78,10 +78,6 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
             <label></label>
             <input id="btnExport" class="aui-button" type="button" value="Export" style="margin-top: 20px;"/>
         </div>
-        <div class="field-group">
-                    <label></label>
-                    <input id="btnExport123" class="aui-button" type="button" value="Export123" style="margin-top: 20px;" onclick="MilestoneReport.clickExport()"/>
-                </div>
     </div>
 </form>
 <script>
@@ -91,6 +87,14 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
         AJS.$("#projectCat").auiSelect2();
         AJS.$("#milestoneStatus").auiSelect2();
     });
+    AJS.$("#projectType").change(function(){
+        MilestoneReport.clickExport();
+        MilestoneReport.updateProjectByTypeAndCategory();
+    });
+    AJS.$("#projectCat").change(function(){
+        MilestoneReport.updateProjectByTypeAndCategory();
+    });
+
     var DATE_FORMAT_JAVASCRIPT = '$action.getDateFormat()';
     AJS.params.dateFormat = DATE_FORMAT_JAVASCRIPT;
     Calendar.setup({
