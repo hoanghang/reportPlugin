@@ -3,11 +3,7 @@ package vn.vnpt.reportPlugin.entities;
 public class MyObjectMapper {
     private long id;
     private String name;
-
-    public MyObjectMapper(long id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    private String key;
 
     public MyObjectMapper() {
     }
@@ -26,5 +22,13 @@ public class MyObjectMapper {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
     }
 }

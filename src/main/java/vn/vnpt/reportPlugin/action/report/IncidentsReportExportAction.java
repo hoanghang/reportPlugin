@@ -3,12 +3,8 @@ package vn.vnpt.reportPlugin.action.report;
 import com.aspose.cells.*;
 import com.atlassian.jira.web.action.JiraWebActionSupport;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-//import org.springframework.util.CollectionUtils;
 import sun.misc.IOUtils;
 import vn.vnpt.reportPlugin.service.QABusyRateWeeklyService;
-//import org.springframework.util.FileCopyUtils;
-
-
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,10 +13,10 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 
-@Named("QABusyRateWeeklyExportAction")
-public class QABusyRateWeeklyExportAction extends JiraWebActionSupport {
+@Named("IncidentsReportExportAction")
+public class IncidentsReportExportAction extends JiraWebActionSupport {
     private String projects;
-    private String issueType;
+    private String projectCategories;
     private String toDate;
     private String fromDate;
 
@@ -28,21 +24,19 @@ public class QABusyRateWeeklyExportAction extends JiraWebActionSupport {
     private final QABusyRateWeeklyService qaBusyRateWeeklyService;
 
     @Inject
-    public QABusyRateWeeklyExportAction(QABusyRateWeeklyService qaBusyRateWeeklyService) {
+    public IncidentsReportExportAction(QABusyRateWeeklyService qaBusyRateWeeklyService) {
         this.qaBusyRateWeeklyService = qaBusyRateWeeklyService;
     }
 
     @Override
     public String execute() throws Exception {
         try {
-            String fileName = "Template.xlsx";
+            String fileName = "Incident_report_ITVAS.xlsx";
             ServletOutputStream outputStream;
             File fileExport = qaBusyRateWeeklyService.exportQABusyRateWeeklyReport(fileName,
-                    projects, issueType, toDate, fromDate);
+                    projects, projectCategories, fromDate, toDate);
 
-            ArrayList list = new ArrayList();
-//            CollectionUtils.isEmpty(list);
-
+            System.out.println("date: " + fromDate + "to: " + toDate);
             getHttpResponse().setContentType("application/xlsx");
             getHttpResponse().setContentLength(new Long(fileExport.length()).intValue());
             getHttpResponse().setBufferSize(4096);
@@ -57,6 +51,7 @@ public class QABusyRateWeeklyExportAction extends JiraWebActionSupport {
 //            while ((length = input.read(buffer)) > 0) {
 //                outputStream.write(buffer, 0, length);
 //            }
+
             outputStream.flush();
             outputStream.close();
             input.close();
@@ -64,6 +59,7 @@ public class QABusyRateWeeklyExportAction extends JiraWebActionSupport {
 
             return "success";
         } catch (Exception ex) {
+            ex.printStackTrace();
             return "error";
         }
     }
@@ -76,12 +72,12 @@ public class QABusyRateWeeklyExportAction extends JiraWebActionSupport {
         this.projects = projects;
     }
 
-    public String getIssueType() {
-        return issueType;
+    public String getProjectCategories() {
+        return projectCategories;
     }
 
-    public void setIssueType(String issueType) {
-        this.issueType = issueType;
+    public void setProjectCategories(String projectCategories) {
+        this.projectCategories = projectCategories;
     }
 
     public String getToDate() {
@@ -98,16 +94,5 @@ public class QABusyRateWeeklyExportAction extends JiraWebActionSupport {
 
     public void setFromDate(String fromDate) {
         this.fromDate = fromDate;
-    }
-
-    private void setCellData(Cell cell, Object value) {
-        Style style = cell.getStyle();
-        style.setBackgroundColor(Color.getWhite());
-        style.setForegroundColor(Color.getWhite());
-        Font font = style.getFont();
-        font.setBold(false);
-        font.setColor(Color.getBlack());
-        cell.setStyle(style);
-        cell.setValue(value);
     }
 }

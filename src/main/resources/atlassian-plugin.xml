@@ -17,12 +17,9 @@
     <!-- add our web resources -->
     <web-resource key="reportPlugin-resources" name="reportPlugin Web Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
-        
-        <resource type="download" name="reportPlugin.css" location="/css/reportPlugin.css"/>
-        <resource type="download" name="reportPlugin.js" location="/js/reportPlugin.js"/>
+        <resource type="download" name="reportPlugin.js" location="/js/incidentsReport.js"/>
         <resource type="download" name="images/" location="/images"/>
-
-        <context>reportPlugin</context>
+        <context>incidentsReport</context>
     </web-resource>
     <!-- add our web resources -->
     <web-resource key="milestone-resources" name="Milestone Report Resources">
@@ -51,20 +48,20 @@
     <web-item key="view-report-qa-link" name="Report Link"
               section="report-qa-link/report-qa-section" weight="20">
         <label>Báo cáo sự cố</label>
-        <link linkId="view-report-qa-link">/secure/QABusyrateReport.jspa</link>
+        <link linkId="view-report-qa-link">/secure/IncidentsReport.jspa</link>
     </web-item>
-    <webwork1 key="QABusyrateReport"  name="ReportAction" class="java.lang.Object">
+    <webwork1 key="IncidentsReport"  name="IncidentsReportAction" class="java.lang.Object">
         <actions>
-            <action name="vn.vnpt.reportPlugin.action.QABusyrateReport"
-                    alias="QABusyrateReport">
-                <view name="success">/templates/busyrateWeeklyReport.vm</view>
+            <action name="vn.vnpt.reportPlugin.action.IncidentsReport"
+                    alias="IncidentsReport">
+                <view name="success">/templates/incidentsReport.vm</view>
                 <!--<view name="success">/templates/reportForm.vm</view>-->
-                <view name="error">/templates/busyrate/error.vm</view>
+                <view name="error">/templates/error/error.vm</view>
             </action>
-            <action name="vn.vnpt.reportPlugin.action.report.QABusyRateWeeklyExportAction"
-                    alias="QABusyRateWeeklyExportAction">
-                <view name="success">/templates/busyrateWeeklyReport.vm</view>
-                <view name="error">/templates/busyrate/error.vm</view>
+            <action name="vn.vnpt.reportPlugin.action.report.IncidentsReportExportAction"
+                    alias="IncidentsReportExportAction">
+                <view name="success">/templates/incidentsReport.vm</view>
+                <view name="error">/templates/error/error.vm</view>
             </action>
         </actions>
     </webwork1>
@@ -84,7 +81,7 @@
                 <!--<view name="success">/templates/reportForm.vm</view>-->
                 <view name="error">/templates/busyrate/error.vm</view>
             </action>
-            <action name="vn.vnpt.reportPlugin.action.report.MilestoneReportExportAction"
+            <action name="vn.vnpt.reportPlugin.action.report.IncidentsReportExportAction"
                     alias="MilestoneReportExportAction">
                 <view name="success">/templates/milestoneReport.vm</view>
                 <view name="error">/templates/busyrate/error.vm</view>

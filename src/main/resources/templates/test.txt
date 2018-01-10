@@ -1,1 +1,4 @@
 hang test git commit abc
+Uploaded image for project: 'BSC -SOFT Theo dõi tiến độ thực hiện văn bản SOFT'	
+BSC -SOFT Theo dõi tiến độ thực hiện văn bản SOFT
+

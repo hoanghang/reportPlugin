@@ -1,4 +1,4 @@
-##$webResourceManager.requireResourcesForContext("reportPlugin")
+$webResourceManager.requireResourcesForContext("incidentsReport")
 $webResourceManager.requireResource("jira.webresources:calendar-en")
 $webResourceManager.requireResource("jira.webresources:calendar")
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
@@ -16,23 +16,28 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
             <label> </label>
             <h3><b>Báo cáo sự cố</b></h3>
         </div>
+
+         <div class="field-group">
+             <label for="projectCat">Project categories</label>
+             <select name="projectCat" id="projectCat" multiple="">
+                 #foreach ($projectCat in $action.getAllProjectCategories())
+                    #if ($projectCat.id == 10000 or $projectCat.id == 10101 or $projectCat.id == 10104 or $projectCat.id == 10105)
+                        <option value='$projectCat.id' selected>$projectCat.name</option>
+                    #else
+                        <option value='$projectCat.id'>$projectCat.name</option>
+                    #end
+                 #end
+             </select>
+          </div>
+
          <div class="field-group">
             <label for="projects">Projects</label>
             <select name="projects" id="projects" multiple="">
                 #foreach ($project in $action.getAllProject())
-                    <option value='$project.id'>$project.name</option>
+                    <option value='$project.key'>$project.name</option>
                 #end
             </select>
          </div>
-
-         <div class="field-group">
-             <label for="issueType">Issue type</label>
-             <select name="issueType" id="issueType" multiple="">
-                 #foreach ($issueType in $action.getAllIssueType())
-                     <option value='$issueType.id'>$issueType.name</option>
-                 #end
-             </select>
-          </div>
 
         <div class="field-group">
             <label for="select-from-date">From Date</label>
@@ -62,72 +67,78 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
             <label></label>
             <input id="btnExport" class="aui-button" type="button" value="Export" style="margin-top: 20px;"/>
         </div>
+
     </div>
 </form>
 <script>
     AJS.$(document).ready(function(){
         AJS.$("#projects").auiSelect2();
+        AJS.$("#projectCat").auiSelect2();
         AJS.$("#issueType").auiSelect2();
     });
     var DATE_FORMAT_JAVASCRIPT = '$action.getDateFormat()';
-        AJS.params.dateFormat = DATE_FORMAT_JAVASCRIPT;
-        Calendar.setup({
-            firstDay: 0,
-            inputField: "txtStartDate",
-            button: "icon-sdate-picker",
-            align: "Br",
-            singleClick: true,
-            useISO8601WeekNumbers: false, // use ISO8601 date/time standard
-            showsTime: false,
-            ifFormat: AJS.params.dateFormat,
-        });
-        Calendar.setup({
-            firstDay: 0,
-            inputField: "txtEndDate",
-            button: "icon-edate-picker",
-            align: "Br",
-            singleClick: true,
-            useISO8601WeekNumbers: false,
-            showsTime: false,
-            ifFormat: AJS.params.dateFormat,
-        });
-        AJS.$("#txtStartDate").change(function () {
-            AJS.$("#fromdate-validate").html('');
-        });
-        AJS.$("#txtEndDate").change(function () {
-            AJS.$("#todate-validate").html('');
-        });
-
+    AJS.params.dateFormat = DATE_FORMAT_JAVASCRIPT;
+    Calendar.setup({
+        firstDay: 0,
+        inputField: "txtStartDate",
+        button: "icon-sdate-picker",
+        align: "Br",
+        singleClick: true,
+        useISO8601WeekNumbers: false, // use ISO8601 date/time standard
+        showsTime: false,
+        ifFormat: AJS.params.dateFormat,
+    });
+    Calendar.setup({
+        firstDay: 0,
+        inputField: "txtEndDate",
+        button: "icon-edate-picker",
+        align: "Br",
+        singleClick: true,
+        useISO8601WeekNumbers: false,
+        showsTime: false,
+        ifFormat: AJS.params.dateFormat,
+    });
+    AJS.$("#txtStartDate").change(function () {
+        AJS.$("#fromdate-validate").html('');
+    });
+    AJS.$("#txtEndDate").change(function () {
+        AJS.$("#todate-validate").html('');
+    });
+    AJS.$("#projectCat").change(function(){
+        IncidentsReport.updateProjectsByCategories();
+    });
 
     AJS.$("#btnExport").click(function () {
-            var projects = AJS.$("#projects").val();
-            var issueType = AJS.$("#issueType").val();
-            var toDate = AJS.$("#txtEndDate").val();
-            var fromDate = AJS.$("#txtStartDate").val();
-            var projectTmp = "";
-            if (projects) {
-                for (var i = 0; i < projects.length; i++) {
-                    if (i == 0) {
-                        projectTmp += projects[i];
-                    } else {
-                        projectTmp += "," + projects[i];
-                    }
-
+        var projects = AJS.$("#projects").val();
+        var projectCategory = AJS.$("#projectCat").val();
+        var toDate = AJS.$("#txtEndDate").val();
+        var fromDate = AJS.$("#txtStartDate").val();
+        var projectTmp = "";
+        if (projects == undefined || projects == null || projects == "") {
+            projectTmp = "all";
+        }else{
+            for (var i = 0; i < projects.length; i++) {
+                if (i == 0) {
+                    projectTmp += projects[i];
+                } else {
+                    projectTmp += "," + projects[i];
                 }
             }
-            var issueTypeTmp = "";
-                if (issueType) {
-                    for (var i = 0; i < issueType.length; i++) {
-                        if (i == 0) {
-                            issueTypeTmp += issueType[i];
-                        } else {
-                            issueTypeTmp += "," + issueType[i];
-                        }
-
-                    }
+        }
+        var projectCategories = "";
+        if (projectCategory == undefined || projectCategory == null || projectCategory == "") {
+            projectCategories = "all";
+        } else {
+            for (var i = 0; i < projectCategory.length; i++) {
+                if (i == 0) {
+                    projectCategories += projectCategory[i];
+                } else {
+                    projectCategories += "," + projectCategory[i];
                 }
-            location.href = contextPath + "/secure/QABusyRateWeeklyExportAction.jspa?projects=" + projectTmp + "&issueType=" + issueTypeTmp + "&toDate=" + toDate + "&fromDate=" + fromDate;
-        });
+            }
+        }
+        location.href = contextPath + "/secure/IncidentsReportExportAction.jspa?projects=" + projectTmp + "&projectCategories=" + projectCategories + "&toDate=" + toDate + "&fromDate=" + fromDate;
+    });
 </script>
 </body>
 </html>
