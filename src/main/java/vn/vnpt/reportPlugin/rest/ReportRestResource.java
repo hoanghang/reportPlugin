@@ -69,20 +69,21 @@ public class ReportRestResource {
     }
 
     @GET
-    @Path("/search/getProjectsByProjectTypes/{projectTypes}/{projectCategories}")
+    @Path("/search/getProjectsByProjectTypesAndCategories/{projectTypes}/{projectCategories}")
     @Produces({"application/json"})
     public Response getProjectsByCategoriesAndTypes(@PathParam("projectTypes") String projectTypes,
-                                            @PathParam("projectCategories") String projectCategories) {
+                                                    @PathParam("projectCategories") String projectCategories) {
         String[] projectTypeList = null;
         String[] projectCategoryList = null;
         List<Project> projectList = new ArrayList<Project>();
         int count = 0;
 
-        if (ObjectUtils.isNotEmpty(projectTypes)) {
+        System.out.println("project Cat 123: " + projectCategories);
+        if (!projectTypes.equalsIgnoreCase("all")) {
             projectTypeList = projectTypes.split(",");
         }
 
-        if (ObjectUtils.isNotEmpty(projectCategories)) {
+        if (!projectCategories.equalsIgnoreCase("all")) {
             projectCategoryList = projectCategories.split(",");
         }
         if(projectCategoryList == null){
@@ -92,13 +93,16 @@ public class ReportRestResource {
                 List<Project> projectListTmp = projectManager.getProjects();
                 for (Project project : projectListTmp){
                     String projectType = project.getProjectTypeKey().getKey();
+                    System.out.println("project type 123: " + projectType);
                     for (int i = 0; i < projectTypeList.length; i++) {
+                        System.out.println("project type list: " + projectTypeList[i]);
                         count = 0;
                         if(projectType.equalsIgnoreCase(projectTypeList[i])){
                             count ++;
                         }
+                        System.out.println("count "+ count);
                     }
-                    if (count == 0) {
+                    if (count != 0) {
                         projectList.add(project);
                     }
                 }
@@ -122,7 +126,7 @@ public class ReportRestResource {
                             count ++;
                         }
                     }
-                    if (count == 0) {
+                    if (count != 0) {
                         projectList.add(project);
                     }
                 }

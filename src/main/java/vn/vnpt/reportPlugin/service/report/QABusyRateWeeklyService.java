@@ -1,4 +1,4 @@
-package vn.vnpt.reportPlugin.service;
+package vn.vnpt.reportPlugin.service.report;
 
 import java.io.File;
 

@@ -1,54 +1,45 @@
 package vn.vnpt.reportPlugin.action.report;
 
 import com.atlassian.jira.web.action.JiraWebActionSupport;
-import vn.vnpt.reportPlugin.service.report.QABusyRateWeeklyService;
+import vn.vnpt.reportPlugin.service.report.MilestoneReportService;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.servlet.ServletOutputStream;
-import java.io.*;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.io.File;
+import java.io.FileInputStream;
 
-@Named("IncidentsReportExportAction")
-public class IncidentsReportExportAction extends JiraWebActionSupport {
+public class MilestoneExportAction extends JiraWebActionSupport {
     private String projects;
-    private String projectCategories;
+    private String projectCat;
+    private String milestoneStatus;
+    private String projectType;
     private String toDate;
     private String fromDate;
 
-    //    @ComponentImport
-    private final QABusyRateWeeklyService qaBusyRateWeeklyService;
+//    @ComponentImport
+    private final MilestoneReportService milestoneReportService;
 
     @Inject
-    public IncidentsReportExportAction(QABusyRateWeeklyService qaBusyRateWeeklyService) {
-        this.qaBusyRateWeeklyService = qaBusyRateWeeklyService;
+    public MilestoneExportAction( MilestoneReportService milestoneReportService) {
+        this.milestoneReportService = milestoneReportService;
     }
 
     @Override
     public String execute() throws Exception {
         try {
-            DateFormat df = new SimpleDateFormat("ddMMMyy");
-            Date today = Calendar.getInstance().getTime();
-            String reportDate = df.format(today);
-
-            String fileName = "Incident_report_ITVAS_";
+            String fileName = "Milestone_report.xlsx";
             ServletOutputStream outputStream;
-            fileName = fileName + reportDate + ".xlsx";
-            File fileExport = qaBusyRateWeeklyService.exportQABusyRateWeeklyReport(fileName,
-                    projects, projectCategories, fromDate, toDate);
+            File fileExport =
+                    milestoneReportService.exportMilestoneReport(fileName, projectCat, projects, projectType,
+                    milestoneStatus, toDate, fromDate);
 
             System.out.println("date: " + fromDate + "to: " + toDate);
             getHttpResponse().setContentType("application/xlsx");
             getHttpResponse().setContentLength(new Long(fileExport.length()).intValue());
             getHttpResponse().setBufferSize(4096);
-           // getHttpResponse().setBufferSize(new Long(fileExport.length()).intValue());
+            // getHttpResponse().setBufferSize(new Long(fileExport.length()).intValue());
             getHttpResponse().setHeader("Content-Disposition", "attachment; filename=" + fileExport.getName());
             outputStream = getHttpResponse().getOutputStream();
-
-//            com.aspose.cells.License excelLicense = new com.aspose.cells.License();
 
             FileInputStream input = new FileInputStream(fileExport);
             org.apache.commons.io.IOUtils.copy(input, outputStream);
@@ -78,12 +69,28 @@ public class IncidentsReportExportAction extends JiraWebActionSupport {
         this.projects = projects;
     }
 
-    public String getProjectCategories() {
-        return projectCategories;
+    public String getProjectCat() {
+        return projectCat;
     }
 
-    public void setProjectCategories(String projectCategories) {
-        this.projectCategories = projectCategories;
+    public void setProjectCat(String projectCat) {
+        this.projectCat = projectCat;
+    }
+
+    public String getMilestoneStatus() {
+        return milestoneStatus;
+    }
+
+    public void setMilestoneStatus(String milestoneStatus) {
+        this.milestoneStatus = milestoneStatus;
+    }
+
+    public String getProjectType() {
+        return projectType;
+    }
+
+    public void setProjectType(String projectType) {
+        this.projectType = projectType;
     }
 
     public String getToDate() {

@@ -10,7 +10,7 @@
     <!-- add our i18n resource -->
     <resource type="i18n" name="i18n" location="reportPlugin"/>
 
-    <!--<component-import key="QABusyRateWeeklyService" name="QABusyRateWeeklyService"  interface="vn.vnpt.reportPlugin.service.QABusyRateWeeklyService">-->
+    <!--<component-import key="QABusyRateWeeklyService" name="QABusyRateWeeklyService"  interface="vn.vnpt.reportPlugin.service.report.QABusyRateWeeklyService">-->
         <!--<description>QA Busy Rate Weekly Service</description>-->
     <!--</component-import>-->
 
@@ -20,6 +20,12 @@
         <resource type="download" name="reportPlugin.js" location="/js/incidentsReport.js"/>
         <resource type="download" name="images/" location="/images"/>
         <context>incidentsReport</context>
+    </web-resource>
+    <!-- add our web resources -->
+    <web-resource key="ITVAS-weekly-resources" name="ITVAS Weekly Report Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        <resource type="download" name="ITVASWeeklyReport.js" location="/js/ITVASWeeklyReport.js"/>
+        <context>ITVASWeeklyReport</context>
     </web-resource>
     <!-- add our web resources -->
     <web-resource key="milestone-resources" name="Milestone Report Resources">
@@ -35,10 +41,27 @@
     </rest>
     <!-- End rest -->
 
+    <!--WEB section-->
     <web-section name="reportSection" i18n-name-key="report-qa-section.name"
                  key="report-qa-section" location="report-qa-link" weight="200">
         <description key="report-qa.description">The Report Plugin</description>
     </web-section>
+
+    <web-section key="admin_vnpt_menu" name="VNPT Menu"
+                 location="system.admin.top.navigation.bar" i18n-name-key="VNPT"
+                 weight="105">
+        <label key="VNPT" />
+        <!--<condition-->
+                <!--class="com.atlassian.jira.plugin.webfragment.conditions.UserIsAdminCondition" />-->
+    </web-section>
+
+    <web-section key="vnpt_schedule_section" name="Administrate VNPT system Section"
+                 location="admin_vnpt_menu" i18n-name-key="vnpt_report_section" weight="60">
+        <label key="VNPT report config" />
+        <!--<condition-->
+                <!--class="com.atlassian.jira.plugin.webfragment.conditions.UserIsAdminCondition" />-->
+    </web-section>
+    <!--End section-->
 
     <web-item key="report-qa-link" name="Report Link"
               section="system.top.navigation.bar" weight="200">
@@ -47,7 +70,7 @@
     </web-item>
     <web-item key="view-report-qa-link" name="Report Link"
               section="report-qa-link/report-qa-section" weight="20">
-        <label>Báo cáo sự cố</label>
+        <label>ITVAS Incidents report</label>
         <link linkId="view-report-qa-link">/secure/IncidentsReport.jspa</link>
     </web-item>
     <webwork1 key="IncidentsReport"  name="IncidentsReportAction" class="java.lang.Object">
@@ -66,28 +89,50 @@
         </actions>
     </webwork1>
 
+    <!--ITVAS_Weekly_Report-->
+
+    <web-item key="ITVAS-weekly-report" name="Report Link"
+              section="report-qa-link/report-qa-section" weight="30">
+        <label>ITVAS Weekly report</label>
+        <link linkId="ITVAS-weekly-report">/secure/ITVASWeeklyReport.jspa</link>
+    </web-item>
+    <webwork1 key="ITVASWeeklyReport"  name="ITVASWeeklyReportAction" class="java.lang.Object">
+        <actions>
+            <action name="vn.vnpt.reportPlugin.action.ITVASWeeklyReport"
+                    alias="ITVASWeeklyReport">
+                <view name="success">/templates/itvasWeeklyReport.vm</view>
+                <!--<view name="success">/templates/reportForm.vm</view>-->
+                <view name="error">/templates/error/error.vm</view>
+            </action>
+            <action name="vn.vnpt.reportPlugin.action.report.ITVASWeeklyReportExportAction"
+                    alias="ITVASWeeklyReportExportAction">
+                <view name="success">/templates/itvasWeeklyReport.vm</view>
+                <view name="error">/templates/error/error.vm</view>
+            </action>
+        </actions>
+    </webwork1>
+
     <!--Milestone report-->
 
-    <web-item key="milestone-report" name="Report Link"
-              section="report-qa-link/report-qa-section" weight="30">
-        <label>Milestone report</label>
-        <link linkId="milestone-report">/secure/MilestoneReport.jspa</link>
-    </web-item>
+    <!--<web-item key="milestone-report" name="Report Link"-->
+              <!--section="report-qa-link/report-qa-section" weight="40">-->
+    <!--<label>QA Milestone report</label>-->
+        <!--<link linkId="milestone-report">/secure/MilestoneReport.jspa</link>-->
+    <!--</web-item>-->
     <webwork1 key="MilestoneReport"  name="MilestoneReportAction" class="java.lang.Object">
         <actions>
             <action name="vn.vnpt.reportPlugin.action.MilestoneReport"
                     alias="MilestoneReport">
                 <view name="success">/templates/milestoneReport.vm</view>
                 <!--<view name="success">/templates/reportForm.vm</view>-->
-                <view name="error">/templates/busyrate/error.vm</view>
+                <view name="error">/templates/error/error.vm</view>
             </action>
-            <action name="vn.vnpt.reportPlugin.action.report.IncidentsReportExportAction"
-                    alias="MilestoneReportExportAction">
+            <action name="vn.vnpt.reportPlugin.action.report.MilestoneExportAction"
+                    alias="MilestoneExportAction">
                 <view name="success">/templates/milestoneReport.vm</view>
-                <view name="error">/templates/busyrate/error.vm</view>
+                <view name="error">/templates/error/error.vm</view>
             </action>
         </actions>
     </webwork1>
-
 
 </atlassian-plugin>

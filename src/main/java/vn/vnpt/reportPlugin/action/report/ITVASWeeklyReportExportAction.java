@@ -1,30 +1,31 @@
 package vn.vnpt.reportPlugin.action.report;
 
 import com.atlassian.jira.web.action.JiraWebActionSupport;
+import vn.vnpt.reportPlugin.service.report.ITVASWeeklyReportService;
 import vn.vnpt.reportPlugin.service.report.QABusyRateWeeklyService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.ServletOutputStream;
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-@Named("IncidentsReportExportAction")
-public class IncidentsReportExportAction extends JiraWebActionSupport {
+@Named("ITVASWeeklyReportExportAction")
+public class ITVASWeeklyReportExportAction extends JiraWebActionSupport {
     private String projects;
     private String projectCategories;
+    private String types;
     private String toDate;
     private String fromDate;
 
-    //    @ComponentImport
-    private final QABusyRateWeeklyService qaBusyRateWeeklyService;
-
+    private final ITVASWeeklyReportService itvasWeeklyReportService;
     @Inject
-    public IncidentsReportExportAction(QABusyRateWeeklyService qaBusyRateWeeklyService) {
-        this.qaBusyRateWeeklyService = qaBusyRateWeeklyService;
+    public ITVASWeeklyReportExportAction(ITVASWeeklyReportService itvasWeeklyReportService) {
+        this.itvasWeeklyReportService = itvasWeeklyReportService;
     }
 
     @Override
@@ -34,30 +35,21 @@ public class IncidentsReportExportAction extends JiraWebActionSupport {
             Date today = Calendar.getInstance().getTime();
             String reportDate = df.format(today);
 
-            String fileName = "Incident_report_ITVAS_";
+            String fileName = "ITVAS_Weekly_report_";
             ServletOutputStream outputStream;
             fileName = fileName + reportDate + ".xlsx";
-            File fileExport = qaBusyRateWeeklyService.exportQABusyRateWeeklyReport(fileName,
-                    projects, projectCategories, fromDate, toDate);
+            File fileExport = itvasWeeklyReportService.exportITVASWeeklyReport(fileName, projects, types, projectCategories,
+                    fromDate, toDate);
 
             System.out.println("date: " + fromDate + "to: " + toDate);
             getHttpResponse().setContentType("application/xlsx");
             getHttpResponse().setContentLength(new Long(fileExport.length()).intValue());
             getHttpResponse().setBufferSize(4096);
-           // getHttpResponse().setBufferSize(new Long(fileExport.length()).intValue());
             getHttpResponse().setHeader("Content-Disposition", "attachment; filename=" + fileExport.getName());
             outputStream = getHttpResponse().getOutputStream();
 
-//            com.aspose.cells.License excelLicense = new com.aspose.cells.License();
-
             FileInputStream input = new FileInputStream(fileExport);
             org.apache.commons.io.IOUtils.copy(input, outputStream);
-//            byte[] buffer = new byte[4096];
-//            int length;
-//            while ((length = input.read(buffer)) > 0) {
-//                outputStream.write(buffer, 0, length);
-//            }
-
             outputStream.flush();
             outputStream.close();
             input.close();
@@ -84,6 +76,14 @@ public class IncidentsReportExportAction extends JiraWebActionSupport {
 
     public void setProjectCategories(String projectCategories) {
         this.projectCategories = projectCategories;
+    }
+
+    public String getTypes() {
+        return types;
+    }
+
+    public void setTypes(String types) {
+        this.types = types;
     }
 
     public String getToDate() {

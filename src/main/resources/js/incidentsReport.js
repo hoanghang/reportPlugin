@@ -4,6 +4,59 @@ IncidentsReport.clickExport = function(){
     console.log("abc........");
 }
 
+IncidentsReport.validation = function () {
+    var check = true;
+        var fromDate = AJS.$("#txtStartDate").val();
+        var toDate = AJS.$("#txtEndDate").val();
+        if (fromDate == undefined || fromDate == null || fromDate == "") {
+            AJS.$("#fromdate-validate").html('');
+                AJS
+                    .$("#fromdate-validate")
+                    .append(
+                        'Please enter a valid date!');
+                check = false;
+        }else{
+            if (!moment(fromDate, "D/MMM/YY", true).isValid()) {
+                AJS.$("#fromdate-validate").html('');
+                AJS
+                    .$("#fromdate-validate")
+                    .append(
+                        'Please enter a valid date: D/MMM/YY!');
+                check = false;
+            }
+        }
+        if (toDate == undefined || toDate == null || toDate == "") {
+            AJS.$("#todate-validate").html('');
+                AJS
+                    .$("#todate-validate")
+                    .append(
+                        'Please enter a valid date!');
+                check = false;
+        }else{
+            if (!moment(toDate, "D/MMM/YY", true).isValid()) {
+                AJS.$("#todate-validate").html('');
+                AJS
+                    .$("#todate-validate")
+                    .append(
+                        'Please enter a valid date: D/MMM/YY!');
+                check = false;
+            }
+        }
+
+        if(toDate && fromDate){
+            if(moment(toDate, "D/MMM/YY", true).isValid() && moment(fromDate, "D/MMM/YY", true).isValid()){
+                var startDate = new Date(moment(fromDate,"D/MMM/YY").toDate().getTime());
+                var endDate = new Date(moment(toDate,"D/MMM/YY").toDate().getTime());
+                if(startDate> endDate){
+                    AJS.$("#fromdate-validate").html('');
+                    AJS.$("#fromdate-validate").append('From Date must less than To Date!');
+                    check = false;
+                }
+            }
+        }
+        return check;
+}
+
 IncidentsReport.updateProjectsByCategories = function(){
     var projectCategory = AJS.$("#projectCat").val();
 

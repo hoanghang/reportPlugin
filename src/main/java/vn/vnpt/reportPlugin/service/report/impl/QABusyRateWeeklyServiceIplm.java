@@ -1,4 +1,4 @@
-package vn.vnpt.reportPlugin.service.impl;
+package vn.vnpt.reportPlugin.service.report.impl;
 
 import com.aspose.cells.*;
 import com.atlassian.jira.issue.CustomFieldManager;
@@ -9,13 +9,12 @@ import com.atlassian.jira.project.Project;
 import com.atlassian.jira.project.ProjectCategory;
 import com.atlassian.jira.project.ProjectManager;
 import com.atlassian.plugin.spring.scanner.annotation.imports.ComponentImport;
-import vn.vnpt.reportPlugin.service.QABusyRateWeeklyService;
+import vn.vnpt.reportPlugin.service.report.QABusyRateWeeklyService;
 import vn.vnpt.reportPlugin.util.DateUtil;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 
@@ -71,13 +70,12 @@ public class QABusyRateWeeklyServiceIplm implements QABusyRateWeeklyService {
         }
 
         InputStream is = getClass().getResourceAsStream("/templates/reportTemplates/Template_incident_report_ITVAS.xlsx");
-//        License license= new License();
-//        license.setLicense(new FileInputStream("Aspose.Total.Java.lic"));
 
         Workbook workbook = new Workbook(is);
-        Worksheet sheet = workbook.getWorksheets().get("Sheet1");
-//        setCellData(sheet.getCells().get("A" + 10), "hang");
+        Worksheet sheet = workbook.getWorksheets().get("General");
+        Worksheet sheetDetail = workbook.getWorksheets().get("Detail");
         int index = 12;
+        int indexDetail = 4;
 
         setCellData(sheet.getCells().get("B" + 4), from);
         setCellData(sheet.getCells().get("B" + 5), to);
@@ -133,6 +131,20 @@ public class QABusyRateWeeklyServiceIplm implements QABusyRateWeeklyService {
                                         }
                                     }
                                 }
+
+                                if(checkSeverity == 1 || checkSeverity == 0 || checkSeverity == 4){
+                                    setCellData(sheetDetail.getCells().get("A" + indexDetail), project1.getName());
+                                    setCellData(sheetDetail.getCells().get("B" + indexDetail), issue.getKey());
+                                    setCellData(sheetDetail.getCells().get("C" + indexDetail), issue.getSummary());
+                                    setCellData(sheetDetail.getCells().get("D" + indexDetail), issue.getStatus().getName());
+                                    setCellData(sheetDetail.getCells().get("E" + indexDetail), issue.getReporter().getDisplayName());
+                                    setCellData(sheetDetail.getCells().get("F" + indexDetail), (issue.getAssignee() == null) ? "" : issue.getAssignee().getDisplayName());
+                                    setCellData(sheetDetail.getCells().get("G" + indexDetail), issue.getCreated());
+                                    setCellData(sheetDetail.getCells().get("H" + indexDetail), (issue.getDueDate()== null) ? "" : issue.getDueDate());
+                                    setCellData(sheetDetail.getCells().get("I" + indexDetail), issue.getCustomFieldValue(
+                                            customFieldManager.	getCustomFieldObject(CUSTOM_FIELD_INCIDENT_SEVERITY)).toString());
+                                    indexDetail++;
+                                }
                             }
                         }
                     }
@@ -159,10 +171,8 @@ public class QABusyRateWeeklyServiceIplm implements QABusyRateWeeklyService {
 
     }
 
-//    private List<Integer> countIssue()
 
     private int checkSeverityOfIncident(Issue issue){
-//		System.out.println("issueKey" +issue.getKey());
 		try {
             CustomField field = customFieldManager.getCustomFieldObject(CUSTOM_FIELD_INCIDENT_SEVERITY);
             String value = issue.getCustomFieldValue(field).toString();
@@ -209,7 +219,8 @@ public class QABusyRateWeeklyServiceIplm implements QABusyRateWeeklyService {
     }
 
     private boolean checkIncident(Issue issue){
-        if (issue.getIssueType().getName().equalsIgnoreCase("Incident")){
+        if (issue.getIssueType().getName().equalsIgnoreCase("Incident")||
+                issue.getIssueType().getName().equalsIgnoreCase("Incident_NoNotifyTD")){
 //        if (issue.getIssueType().getId().equalsIgnoreCase("10320")){
 //        if (issue.getIssueType().getId().equalsIgnoreCase("10200")){
             return true;

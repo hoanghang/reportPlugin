@@ -1,4 +1,4 @@
-$webResourceManager.requireResourcesForContext("incidentsReport")
+$webResourceManager.requireResourcesForContext("ITVASWeeklyReport")
 $webResourceManager.requireResource("jira.webresources:calendar-en")
 $webResourceManager.requireResource("jira.webresources:calendar")
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
@@ -7,14 +7,14 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-ic
 $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 <html>
 <head>
-    <title>ITVAS incidents report </title>
+    <title>ITVAS weekly report </title>
 </head>
 <body style="overflow:auto;">
 <form id="ProjectInfo" class="aui" method="POST">
     <div style="width: 700px; margin-top:20px !important; margin-bottom:auto; margin-left: auto; margin-right: auto; padding-left: 200px;border: thin solid #DDD;border-radius: 8px;background-color: #FFF;">
         <div class="field-group">
             <label> </label>
-            <h3><b>Báo cáo sự cố</b></h3>
+            <h3><b>ITVAS weekly report</b></h3>
         </div>
 
          <div class="field-group">
@@ -38,6 +38,14 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
                 #end
             </select>
          </div>
+         <div class="field-group" hidden>
+             <label for="types">Issue types</label>
+             <select name="types" id="types" multiple="">
+                 #foreach ($type in $action.getAllIssueType())
+                     <option value='$type.id'>$type.name</option>
+                 #end
+             </select>
+          </div>
 
         <div class="field-group">
             <label for="select-from-date">From Date <label style="color: red;">*</label></label>
@@ -74,6 +82,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
     AJS.$(document).ready(function(){
         AJS.$("#projects").auiSelect2();
         AJS.$("#projectCat").auiSelect2();
+        AJS.$("#types").auiSelect2();
         AJS.$("#issueType").auiSelect2();
     });
     var DATE_FORMAT_JAVASCRIPT = '$action.getDateFormat()';
@@ -105,12 +114,13 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
         AJS.$("#todate-validate").html('');
     });
     AJS.$("#projectCat").change(function(){
-        IncidentsReport.updateProjectsByCategories();
+        ITVASWeeklyReport.updateProjectsByCategories();
     });
 
     AJS.$("#btnExport").click(function () {
         var projects = AJS.$("#projects").val();
         var projectCategory = AJS.$("#projectCat").val();
+        var types = AJS.$("#types").val();
         var toDate = AJS.$("#txtEndDate").val();
         var fromDate = AJS.$("#txtStartDate").val();
         var projectTmp = "";
@@ -137,10 +147,25 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
                 }
             }
         }
+        var typeTmp = "";
+        if (types == undefined || types == null || types == "") {
+            typeTmp = "all";
+        }else{
+            for (var i = 0; i < types.length; i++) {
+                if (i == 0) {
+                    typeTmp += types[i];
+                } else {
+                    typeTmp += "," + types[i];
+                }
+            }
+        }
 
-        if(IncidentsReport.validation()){
+        console.log(projects);
+        console.log(projectCategory);
+        console.log(types);
+        if(ITVASWeeklyReport.validation()){
             window.onbeforeunload = null;
-            location.href = contextPath + "/secure/IncidentsReportExportAction.jspa?projects=" + projectTmp + "&projectCategories=" + projectCategories + "&toDate=" + toDate + "&fromDate=" + fromDate;
+            location.href = contextPath + "/secure/ITVASWeeklyReportExportAction.jspa?projects=" + projectTmp + "&projectCategories=" + projectCategories +"&types="+typeTmp+ "&toDate=" + toDate + "&fromDate=" + fromDate;
         }
     });
 </script>

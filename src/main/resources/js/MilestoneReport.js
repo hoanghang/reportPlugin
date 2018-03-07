@@ -9,8 +9,8 @@ MilestoneReport.updateProjectByTypeAndCategory = function(){
     var projectCategory = AJS.$("#projectCat").val();
 
     var projectTypes = "";
-    if (projectType == undefined) {
-        projectTypes = "";
+    if (projectType == undefined || projectType == null || projectType == "") {
+        projectTypes = "all";
     } else {
         for (var i = 0; i < projectType.length; i++) {
             if (i == 0) {
@@ -21,8 +21,8 @@ MilestoneReport.updateProjectByTypeAndCategory = function(){
         }
     }
     var projectCategories = "";
-    if (projectCategory == undefined) {
-        projectCategories = "";
+    if (projectCategory == undefined || projectCategory == null || projectCategory == "") {
+        projectCategories = "all";
     } else {
         for (var i = 0; i < projectCategory.length; i++) {
             if (i == 0) {
@@ -37,7 +37,7 @@ MilestoneReport.updateProjectByTypeAndCategory = function(){
     console.log(projectTypes);
     AJS.$.ajax({
         url: contextPath
-        + "/rest/vnpt-report/1.0/report/search/getProjectsByProjectTypes/"
+        + "/rest/vnpt-report/1.0/report/search/getProjectsByProjectTypesAndCategories/"
         + projectTypes + "/" + projectCategories,
         type: "GET",
         dataType: "json",
@@ -45,7 +45,7 @@ MilestoneReport.updateProjectByTypeAndCategory = function(){
             AJS.$("#projects").html('');
             var temp = "";
             for (var i = 0; i < data.length; i++) {
-                temp += "<option value='" + data[i].id + "'>"
+                temp += "<option value='" + data[i].key + "'>"
                     + data[i].name + "</option>";
             }
             AJS.$("#projects").auiSelect2("destroy");

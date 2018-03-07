@@ -36,7 +36,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
             <label for="projects">Projects</label>
             <select name="projects" id="projects" multiple="">
                 #foreach ($project in $action.getAllProject())
-                    <option value='$project.id'>$project.name</option>
+                    <option value='$project.key'>$project.name</option>
                 #end
             </select>
         </div>
@@ -46,7 +46,6 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
             <select name="milestoneStatus" id="milestoneStatus" multiple="">
                 <option value="Released">Released</option>
                 <option value="UnReleased">UnReleased</option>
-                <option value="Archive">Archive</option>
             </select>
         </div>
 
@@ -88,7 +87,7 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
         AJS.$("#milestoneStatus").auiSelect2();
     });
     AJS.$("#projectType").change(function(){
-        MilestoneReport.clickExport();
+      //  MilestoneReport.clickExport();
         MilestoneReport.updateProjectByTypeAndCategory();
     });
     AJS.$("#projectCat").change(function(){
@@ -126,11 +125,30 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 
     AJS.$("#btnExport").click(function () {
             var projects = AJS.$("#projects").val();
-            var issueType = AJS.$("#issueType").val();
+            console.log("abc........" );
+            console.log(projects);
+            var projectType = AJS.$("#projectType").val();
+            var projectCat = AJS.$("#projectCat").val();
+            var milestoneStatus = AJS.$("#milestoneStatus").val();
             var toDate = AJS.$("#txtEndDate").val();
             var fromDate = AJS.$("#txtStartDate").val();
+
+            var milestoneStatusTmp = "";
+            if (milestoneStatus == undefined || milestoneStatus == null || milestoneStatus == "") {
+                milestoneStatusTmp = "all";
+            }else{
+                for (var i = 0; i < milestoneStatus.length; i++) {
+                    if (i == 0) {
+                        milestoneStatusTmp += milestoneStatus[i];
+                    } else {
+                        milestoneStatusTmp += "," + milestoneStatus[i];
+                    }
+                }
+            }
             var projectTmp = "";
-            if (projects) {
+            if (projects == undefined || projects == null || projects == "") {
+                projectTmp = "all";
+            }else{
                 for (var i = 0; i < projects.length; i++) {
                     if (i == 0) {
                         projectTmp += projects[i];
@@ -140,18 +158,34 @@ $webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
 
                 }
             }
-            var issueTypeTmp = "";
-                if (issueType) {
-                    for (var i = 0; i < issueType.length; i++) {
-                        if (i == 0) {
-                            issueTypeTmp += issueType[i];
-                        } else {
-                            issueTypeTmp += "," + issueType[i];
-                        }
+            var projectTypeTmp = "";
+            if (projectType == undefined || projectType == null || projectType == "") {
+                projectTypeTmp = "all";
+            } else {
+                for (var i = 0; i < projectType.length; i++) {
+                    if (i == 0) {
+                        projectTypeTmp += projectType[i];
+                    } else {
+                        projectTypeTmp += "," + projectType[i];
+                    }
 
+                }
+            }
+             console.log(projectTmp);
+
+            var projectCategories = "";
+            if (projectCat == undefined || projectCat == null || projectCat == "") {
+                projectCategories = "all";
+            } else {
+                for (var i = 0; i < projectCat.length; i++) {
+                    if (i == 0) {
+                        projectCategories += projectCat[i];
+                    } else {
+                        projectCategories += "," + projectCat[i];
                     }
                 }
-            location.href = contextPath + "/secure/QABusyRateWeeklyExportAction.jspa?projects=" + projectTmp + "&issueType=" + issueTypeTmp + "&toDate=" + toDate + "&fromDate=" + fromDate;
+            }
+            location.href = contextPath + "/secure/MilestoneExportAction.jspa?projects=" + projectTmp + "&projectType=" + projectTypeTmp + "&projectCat=" + projectCategories + "&milestoneStatus=" + milestoneStatusTmp + "&toDate=" + toDate + "&fromDate=" + fromDate;
         });
 </script>
 </body>
