@@ -1,0 +1,149 @@
+$webResourceManager.requireResourcesForContext("overdueReport")
+$webResourceManager.requireResource("jira.webresources:calendar-en")
+$webResourceManager.requireResource("jira.webresources:calendar")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select")
+$webResourceManager.requireResource("com.atlassian.auiplugin:ajs")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-experimental-iconfont")
+$webResourceManager.requireResource("com.atlassian.auiplugin:aui-select2")
+<html>
+<head>
+    <title>ITVAS overdue report</title>
+</head>
+<body style="overflow:auto;">
+<form id="ProjectInfo" class="aui" method="POST">
+    <div style="width: 700px; margin-top:20px !important; margin-bottom:auto; margin-left: auto; margin-right: auto; padding-left: 200px;border: thin solid #DDD;border-radius: 8px;background-color: #FFF;">
+        <div class="field-group">
+            <label> </label>
+            <h3><b>ITVAS overdue report</b></h3>
+        </div>
+
+         <div class="field-group">
+             <label for="projectCat">Project categories</label>
+             <select name="projectCat" id="projectCat" multiple="">
+                 #foreach ($projectCat in $action.getAllProjectCategories())
+                    #if ($projectCat.id == 10000 or $projectCat.id == 10101 or $projectCat.id == 10104 or $projectCat.id == 10105)
+                        <option value='$projectCat.id' selected>$projectCat.name</option>
+                    #else
+                        <option value='$projectCat.id'>$projectCat.name</option>
+                    #end
+                 #end
+             </select>
+          </div>
+
+         <div class="field-group">
+            <label for="projects">Projects</label>
+            <select name="projects" id="projects" multiple="">
+                #foreach ($project in $action.getAllProject())
+                    <option value='$project.key'>$project.name</option>
+                #end
+            </select>
+         </div>
+
+         <div class="field-group" hidden>
+            <label for="select-from-date">From Date <label style="color: red;">*</label></label>
+            <input class="text date-field" type="text" id="txtStartDate" name="txtStartDate" value=""
+                   data-aui-validation-field="" data-aui-validation-milestone-list-start-date="true"
+                   data-aui-validation-required="required" style="width:120px;"/>
+            <a href="#" class="date_picker projectConfig-datepicker" name="StartDate" title="Select a date"
+               id="icon-sdate-picker">
+                <span class="aui-icon icon-date">Select a date</span>
+                <span class="content"></span>
+            </a>
+            <span id="fromdate-validate" style="color:#d04437"></span>
+        </div>
+
+        <div class="field-group">
+            <label for="select-to-date">Created date less than <label style="color: red;">*</label></label>
+            <input class="text date-field" type="text" id="txtEndDate" name="txtEndDate" value=""
+                   data-aui-validation-field="" data-aui-validation-milestone-list-end-date="true"
+                   data-aui-validation-required="required" style="width:120px;"/>
+            <a href="#" class="date_picker projectConfig-datepicker" name="EndDate" title="Select a date"
+               id="icon-edate-picker">
+                <span class="aui-icon icon-date">Select a date</span>
+                <span class="content"></span>
+            </a>
+            <span id="todate-validate" style="color:#d04437"></span>
+        </div>
+        <div class="field-group">
+            <label></label>
+            <input id="btnExport" class="aui-button" type="button" value="Export" style="margin-top: 20px;"/>
+        </div>
+
+    </div>
+</form>
+<script>
+    AJS.$(document).ready(function(){
+        AJS.$("#projects").auiSelect2();
+        AJS.$("#projectCat").auiSelect2();
+        AJS.$("#issueType").auiSelect2();
+    });
+    var DATE_FORMAT_JAVASCRIPT = '$action.getDateFormat()';
+    AJS.params.dateFormat = DATE_FORMAT_JAVASCRIPT;
+    Calendar.setup({
+        firstDay: 0,
+        inputField: "txtStartDate",
+        button: "icon-sdate-picker",
+        align: "Br",
+        singleClick: true,
+        useISO8601WeekNumbers: false, // use ISO8601 date/time standard
+        showsTime: false,
+        ifFormat: AJS.params.dateFormat,
+    });
+    Calendar.setup({
+        firstDay: 0,
+        inputField: "txtEndDate",
+        button: "icon-edate-picker",
+        align: "Br",
+        singleClick: true,
+        useISO8601WeekNumbers: false,
+        showsTime: false,
+        ifFormat: AJS.params.dateFormat,
+    });
+    AJS.$("#txtStartDate").change(function () {
+        AJS.$("#fromdate-validate").html('');
+    });
+    AJS.$("#txtEndDate").change(function () {
+        AJS.$("#todate-validate").html('');
+    });
+    AJS.$("#projectCat").change(function(){
+        ITVASOverdueReport.updateProjectsByCategories();
+    });
+
+    AJS.$("#btnExport").click(function () {
+        var projects = AJS.$("#projects").val();
+        var projectCategory = AJS.$("#projectCat").val();
+        var toDate = AJS.$("#txtEndDate").val();
+        var fromDate = AJS.$("#txtStartDate").val();
+        var projectTmp = "";
+        if (projects == undefined || projects == null || projects == "") {
+            projectTmp = "all";
+        }else{
+            for (var i = 0; i < projects.length; i++) {
+                if (i == 0) {
+                    projectTmp += projects[i];
+                } else {
+                    projectTmp += "," + projects[i];
+                }
+            }
+        }
+        var projectCategories = "";
+        if (projectCategory == undefined || projectCategory == null || projectCategory == "") {
+            projectCategories = "all";
+        } else {
+            for (var i = 0; i < projectCategory.length; i++) {
+                if (i == 0) {
+                    projectCategories += projectCategory[i];
+                } else {
+                    projectCategories += "," + projectCategory[i];
+                }
+            }
+        }
+
+        if(ITVASOverdueReport.validation()){
+            window.onbeforeunload = null;
+            location.href = contextPath + "/secure/ITVASOverdueReportExportAction.jspa?projects=" + projectTmp + "&projectCategories=" + projectCategories + "&toDate=" + toDate + "&fromDate=" + fromDate;
+        }
+    });
+</script>
+</body>
+</html>

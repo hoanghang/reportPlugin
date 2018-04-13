@@ -21,6 +21,13 @@
         <resource type="download" name="images/" location="/images"/>
         <context>incidentsReport</context>
     </web-resource>
+
+    <web-resource key="overdue-resources" name="reportPlugin Web Resources">
+        <dependency>com.atlassian.auiplugin:ajs</dependency>
+        <resource type="download" name="reportPlugin.js" location="/js/ITVASOverdueReport.js"/>
+        <resource type="download" name="images/" location="/images"/>
+        <context>overdueReport</context>
+    </web-resource>
     <!-- add our web resources -->
     <web-resource key="ITVAS-weekly-resources" name="ITVAS Weekly Report Resources">
         <dependency>com.atlassian.auiplugin:ajs</dependency>
@@ -67,6 +74,7 @@
               section="system.top.navigation.bar" weight="200">
         <label>Reports</label>
         <link linkId="report-qa-link">/secure/QABusyrateReport.jspa</link>
+        <!--<condition class="com.atlassian.jira.plugin.webfragment.conditions.UserIsAdminCondition" />-->
     </web-item>
     <web-item key="view-report-qa-link" name="Report Link"
               section="report-qa-link/report-qa-section" weight="20">
@@ -107,6 +115,52 @@
             <action name="vn.vnpt.reportPlugin.action.report.ITVASWeeklyReportExportAction"
                     alias="ITVASWeeklyReportExportAction">
                 <view name="success">/templates/itvasWeeklyReport.vm</view>
+                <view name="error">/templates/error/error.vm</view>
+            </action>
+        </actions>
+    </webwork1>
+
+    <!--ITVAS_Overdue_Report-->
+
+    <web-item key="ITVAS-overdue-report" name="Report Link"
+              section="report-qa-link/report-qa-section" weight="30">
+        <label>ITVAS Overdue report</label>
+        <link linkId="ITVAS-overdue-report">/secure/ITVASOverdueReport.jspa</link>
+    </web-item>
+    <webwork1 key="ITVASOverdueReport"  name="ITVASOverdueReportAction" class="java.lang.Object">
+        <actions>
+            <action name="vn.vnpt.reportPlugin.action.ITVASOverdueReport"
+                    alias="ITVASOverdueReport">
+                <view name="success">/templates/itvasOverdueReport.vm</view>
+                <!--<view name="success">/templates/reportForm.vm</view>-->
+                <view name="error">/templates/error/error.vm</view>
+            </action>
+            <action name="vn.vnpt.reportPlugin.action.report.ITVASOverdueReportExportAction"
+                    alias="ITVASOverdueReportExportAction">
+                <view name="success">/templates/itvasOverdueReport.vm</view>
+                <view name="error">/templates/error/error.vm</view>
+            </action>
+        </actions>
+    </webwork1>
+
+    <!--ITVAS_Thongke thoi gian xu ly su co-->
+
+    <web-item key="ITVAS-troubleshooting-time-report" name="Report Link"
+              section="report-qa-link/report-qa-section" weight="40">
+        <label>ITVAS Troubleshooting report</label>
+        <link linkId="ITVAS-troubleshooting-time-report">/secure/ITVASTroubleshootingTimeReport.jspa</link>
+    </web-item>
+    <webwork1 key="ITVASTroubleshootingTimeReport"  name="ITVASTroubleshootingTimeReportAction" class="java.lang.Object">
+        <actions>
+            <action name="vn.vnpt.reportPlugin.action.ITVASTroubleshootingTimeReport"
+                    alias="ITVASTroubleshootingTimeReport">
+                <view name="success">/templates/itvasTroubleshootingTimeReport.vm</view>
+                <!--<view name="success">/templates/reportForm.vm</view>-->
+                <view name="error">/templates/error/error.vm</view>
+            </action>
+            <action name="vn.vnpt.reportPlugin.action.report.ITVASTroubleshootingTimeReportExportAction"
+                    alias="ITVASTroubleshootingTimeReportExportAction">
+                <view name="success">/templates/itvasTroubleshootingTimeReport.vm</view>
                 <view name="error">/templates/error/error.vm</view>
             </action>
         </actions>
